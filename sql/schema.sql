@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS note (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  text TEXT NOT NULL,
+  created_by TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS dream_session (
+  id TEXT PRIMARY KEY,
+  label TEXT NOT NULL,
+  expires_at REAL NOT NULL,
+  payload TEXT NOT NULL
+);
