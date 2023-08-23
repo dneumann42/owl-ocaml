@@ -1,2 +1,10 @@
 (library
- (name owl))
+ (name owl)
+ (libraries
+  dream
+  yojson
+  ppx_deriving
+  ppx_deriving_yojson.runtime
+  caqti-driver-sqlite3)
+ (preprocess
+  (pps lwt_ppx ppx_deriving_yojson)))
