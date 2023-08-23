@@ -62,7 +62,6 @@ let create_note req =
     let%lwt n = (parse_json_req req create_note_input_of_yojson) in
     match user_id req with 
     | None -> 
-      print_endline "HERE?";
       Dream.empty `Bad_Request
     | Some id -> begin
       match n with
@@ -75,11 +74,23 @@ let create_note req =
 
 let get_notes req =
   let%lwt notes = Dream.sql req get_notes_query in
-  let notes = (List.map note_to_yojson notes) in
-  Dream.json (Yojson.Safe.seq_to_string (List.to_seq notes))
+  let notes = `List (List.map note_to_yojson notes) in
+  let s = (Yojson.Safe.to_string notes) in
+  Dream.json s
+
+let cors_middleware handler req =
+  let handlers =
+    [ "Access-Control-Allow-Origin", "*" ]
+  in
+  let%lwt res = handler req in
+  handlers
+  |> List.map (fun (key, value) -> Dream.add_header res key value)
+  |> ignore;
+  Lwt.return res
 
 let () =
   Dream.run 
+  @@ cors_middleware
   @@ Dream.logger
   @@ Dream.sql_pool "sqlite3:db.sqlite"
   @@ Dream.sql_sessions
